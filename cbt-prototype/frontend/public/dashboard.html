@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | CBT Prep Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">CBT Prep Hub</a>
+      <nav>
+        <a id="dashboardLink" href="dashboard.html">Dashboard</a>
+        <button id="logoutButton" class="button button-secondary">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container dashboard-page">
+    <section class="dashboard-hero card">
+      <div>
+        <p class="eyebrow">Student Dashboard</p>
+        <h1 id="welcomeText">Welcome back</h1>
+        <p>Track your progress, start exams, and review recent performance.</p>
+      </div>
+      <div class="dashboard-actions">
+        <a href="subjects.html" class="button">Start Exam</a>
+      </div>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card card">
+        <span>Available exams</span>
+        <strong id="availableExams">0</strong>
+      </article>
+      <article class="stat-card card">
+        <span>Completed</span>
+        <strong id="completedExams">0</strong>
+      </article>
+      <article class="stat-card card">
+        <span>Average score</span>
+        <strong id="averageScore">0%</strong>
+      </article>
+    </section>
+
+    <section class="section">
+      <div class="section-header">
+        <p class="eyebrow">Recent Attempts</p>
+        <h2>Latest exam results</h2>
+      </div>
+      <div id="recentAttempts" class="attempt-list"></div>
+    </section>
+  </main>
+
+  <script src="js/app.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+</body>
+</html>

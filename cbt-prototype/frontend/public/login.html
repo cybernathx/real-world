@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login | CBT Prep Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="auth-page">
+    <section class="auth-panel card">
+      <div class="auth-header">
+        <h1>Student Login</h1>
+        <p>Sign in to access your CBT dashboard and exam practice.</p>
+      </div>
+      <form id="login-form" class="auth-form">
+        <label>
+          Email
+          <input type="email" name="email" id="email" required />
+        </label>
+        <label>
+          Password
+          <input type="password" name="password" id="password" required minlength="6" />
+        </label>
+        <button type="submit" class="button">Login</button>
+        <p class="auth-footer">New here? <a href="register.html">Create an account</a></p>
+      </form>
+    </section>
+  </div>
+  <script src="js/app.js" defer></script>
+  <script src="js/auth.js" defer></script>
+</body>
+</html>

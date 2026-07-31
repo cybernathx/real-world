@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Exam | CBT Prep Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">CBT Prep Hub</a>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <button id="logoutButton" class="button button-secondary">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="section-header">
+      <p class="eyebrow">Exam in progress</p>
+      <h2 id="examSubjectName">Loading exam...</h2>
+      <p id="examStatus" class="eyebrow" style="margin-top:1rem; color: var(--muted);">Preparing exam...</p>
+    </div>
+
+    <div id="examQuestion"></div>
+
+    <div class="exam-footer">
+      <button id="prevQuestion" class="button button-secondary">Previous</button>
+      <button id="nextQuestion" class="button button-secondary">Next</button>
+      <button id="submitExam" class="button">Submit Exam</button>
+    </div>
+  </main>
+
+  <script src="js/app.js" defer></script>
+  <script src="js/exam.js" defer></script>
+</body>
+</html>

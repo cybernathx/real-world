@@ -260,6 +260,29 @@ async function submitExamFinal() {
   const grade = percentage >= 80 ? 'A' : percentage >= 60 ? 'B' : percentage >= 40 ? 'C' : 'D';
 
   try {
+    // Prepare a snapshot to allow result page to show explanations and user's answers
+    const snapshot = {
+      subjectId: examState.subjectId,
+      subjectName: examState.subjectName,
+      questions: examState.questions.map(q => ({
+        id: q.id,
+        text: q.text,
+        option_a: q.option_a,
+        option_b: q.option_b,
+        option_c: q.option_c,
+        option_d: q.option_d,
+        correct_answer: q.correct_answer,
+        explanation: q.explanation
+      })),
+      answers: examState.answers,
+      score,
+      total,
+      percentage,
+      grade,
+      timeUsed: examState.elapsedSeconds,
+      completedAt: new Date().toISOString()
+    };
+
     const response = await fetch('/api/results', {
       method: 'POST',
       headers: CBT.getHeaders(),
@@ -276,6 +299,13 @@ async function submitExamFinal() {
       throw new Error('Unable to save exam result');
     }
     const data = await response.json();
+    try {
+      // Save snapshot keyed by resultId for the results page to consume
+      localStorage.setItem(`exam_result_${data.resultId}`, JSON.stringify(snapshot));
+    } catch (e) {
+      // ignore storage errors
+      console.warn('Could not save exam snapshot', e);
+    }
     window.location.href = `result.html?resultId=${data.resultId}`;
   } catch (error) {
     console.error(error);

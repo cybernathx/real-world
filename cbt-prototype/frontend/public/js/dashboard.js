@@ -41,16 +41,46 @@ async function loadDashboard() {
         adminSection.classList.remove('hidden');
         adminActions.innerHTML = `
           <article class="feature-card card">
+            <h3>Total Students</h3>
+            <p>${data.totalStudents ?? 0}</p>
+          </article>
+          <article class="feature-card card">
+            <h3>Total Questions</h3>
+            <p>${data.totalQuestions ?? 0}</p>
+          </article>
+          <article class="feature-card card">
+            <h3>Total Exams Taken</h3>
+            <p>${data.totalExams ?? 0}</p>
+          </article>
+          <article class="feature-card card">
+            <h3>Total Subjects</h3>
+            <p>${data.totalSubjects ?? 0}</p>
+          </article>
+          <article class="feature-card card">
             <h3>Manage Questions</h3>
-            <p>Create, edit, and organize the exam question bank.</p>
             <a class="button" href="admin-questions.html">Open Question Manager</a>
           </article>
           <article class="feature-card card">
-            <h3>Add New Question</h3>
-            <p>Add a fresh question with answer choices, difficulty, and explanation.</p>
-            <a class="button" href="admin-question-form.html">Add Question</a>
+            <h3>Candidate Records</h3>
+            <a class="button" href="admin-candidates.html">View Candidate Records</a>
           </article>
         `;
+
+        // Recent activity
+        const attemptsContainer = document.querySelector('#recentAttempts');
+        if (Array.isArray(data.recentActivity) && data.recentActivity.length) {
+          attemptsContainer.innerHTML = data.recentActivity.map((attempt) => {
+            return `
+              <article class="card attempt-card">
+                <strong>${attempt.subject}</strong>
+                <span>${attempt.percentage.toFixed(1)}% · ${attempt.score}/${attempt.total} points</span>
+                <span>Grade: ${attempt.grade}</span>
+                <span>Student: ${attempt.student_name}</span>
+                <span>Time used: ${attempt.time_used} sec</span>
+              </article>
+            `;
+          }).join('');
+        }
       }
     }
   } catch (error) {

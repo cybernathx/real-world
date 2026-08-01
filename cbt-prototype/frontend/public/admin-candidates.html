@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Candidate Records | CBT Prep Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">CBT Prep Hub</a>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <button id="logoutButton" class="button button-secondary">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="section-header">
+      <p class="eyebrow">Admin</p>
+      <h2>Candidate Records</h2>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;gap:1rem;align-items:center;margin-bottom:1rem;">
+        <input id="searchInput" placeholder="Search by student name or email" style="flex:1;padding:0.5rem;border:1px solid var(--border);border-radius:0.5rem;" />
+        <select id="subjectFilter" style="padding:0.5rem;border:1px solid var(--border);border-radius:0.5rem;">
+          <option value="">All subjects</option>
+        </select>
+        <button id="searchBtn" class="button">Search</button>
+      </div>
+
+      <div id="recordsTable" style="overflow:auto;"></div>
+
+      <div id="pagination" style="margin-top:1rem;display:flex;gap:0.5rem;align-items:center;"></div>
+    </div>
+  </main>
+
+  <script src="js/app.js" defer></script>
+  <script src="js/admin-candidates.js" defer></script>
+</body>
+</html>

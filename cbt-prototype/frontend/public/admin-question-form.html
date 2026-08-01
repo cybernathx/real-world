@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add / Edit Question | CBT Prep Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">CBT Prep Hub</a>
+      <nav>
+        <a href="admin-questions.html">Back to Questions</a>
+        <button id="logoutButton" class="button button-secondary">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container section">
+    <section class="card auth-panel">
+      <div class="auth-header">
+        <p class="eyebrow" id="formMode">Create a new question</p>
+        <h1 id="formTitle">Add Question</h1>
+      </div>
+      <div id="formMessage" class="form-message"></div>
+      <form id="questionForm" class="auth-form">
+        <label>Subject<select id="subjectSelect" required></select></label>
+        <label>Question Text<textarea id="questionText" rows="4" required></textarea></label>
+        <label>Option A<input type="text" id="optionA" required /></label>
+        <label>Option B<input type="text" id="optionB" required /></label>
+        <label>Option C<input type="text" id="optionC" required /></label>
+        <label>Option D<input type="text" id="optionD" required /></label>
+        <label>Correct Answer<select id="correctAnswer" required>
+          <option value="">Select answer</option>
+          <option value="A">A</option>
+          <option value="B">B</option>
+          <option value="C">C</option>
+          <option value="D">D</option>
+        </select></label>
+        <label>Difficulty<select id="difficulty" required>
+          <option value="">Select difficulty</option>
+          <option value="Easy">Easy</option>
+          <option value="Medium">Medium</option>
+          <option value="Hard">Hard</option>
+        </select></label>
+        <label>Explanation<textarea id="explanation" rows="3" required></textarea></label>
+        <button type="submit" class="button" id="saveButton">Save Question</button>
+      </form>
+    </section>
+  </main>
+
+  <script src="js/app.js" defer></script>
+  <script src="js/admin-question-form.js" defer></script>
+</body>
+</html>

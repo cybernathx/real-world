@@ -32,6 +32,14 @@ const CBT = {
     }
     return true;
   },
+  requireAdmin(redirectTo = 'login.html') {
+    const user = CBT.getUser();
+    if (!CBT.requireAuth(redirectTo) || !user || user.role !== 'admin') {
+      window.location.href = redirectTo;
+      return false;
+    }
+    return true;
+  },
   logout() {
     CBT.clearSession();
     window.location.href = 'login.html';

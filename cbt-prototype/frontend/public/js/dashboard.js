@@ -33,6 +33,26 @@ async function loadDashboard() {
     } else {
       attemptsContainer.innerHTML = '<div class="card"><p>No exam attempts yet. Start your first subject to begin tracking progress.</p></div>';
     }
+
+    if (CBT.getUser()?.role === 'admin') {
+      const adminSection = document.querySelector('#adminDashboardSection');
+      const adminActions = document.querySelector('#adminActions');
+      if (adminSection && adminActions) {
+        adminSection.classList.remove('hidden');
+        adminActions.innerHTML = `
+          <article class="feature-card card">
+            <h3>Manage Questions</h3>
+            <p>Create, edit, and organize the exam question bank.</p>
+            <a class="button" href="admin-questions.html">Open Question Manager</a>
+          </article>
+          <article class="feature-card card">
+            <h3>Add New Question</h3>
+            <p>Add a fresh question with answer choices, difficulty, and explanation.</p>
+            <a class="button" href="admin-question-form.html">Add Question</a>
+          </article>
+        `;
+      }
+    }
   } catch (error) {
     console.error(error);
     alert('Failed to load your dashboard. Please sign in again.');

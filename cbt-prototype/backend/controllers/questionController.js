@@ -1,4 +1,4 @@
-const { all, get } = require('../models/dbHelper');
+const { all, get, run } = require('../models/dbHelper');
 
 function buildFilters(query) {
   const filters = [];
@@ -79,8 +79,100 @@ async function searchQuestions(req, res, next) {
   }
 }
 
+async function createQuestion(req, res, next) {
+  try {
+    const {
+      subjectId,
+      text,
+      optionA,
+      optionB,
+      optionC,
+      optionD,
+      correctAnswer,
+      difficulty,
+      explanation
+    } = req.body;
+
+    if (!subjectId || !text || !optionA || !optionB || !optionC || !optionD || !correctAnswer || !difficulty || !explanation) {
+      return res.status(400).json({ error: 'All question fields are required' });
+    }
+
+    const validAnswers = ['A', 'B', 'C', 'D'];
+    const validDifficulties = ['Easy', 'Medium', 'Hard'];
+
+    if (!validAnswers.includes(correctAnswer)) {
+      return res.status(400).json({ error: 'Correct answer must be A, B, C, or D' });
+    }
+
+    if (!validDifficulties.includes(difficulty)) {
+      return res.status(400).json({ error: 'Difficulty must be Easy, Medium, or Hard' });
+    }
+
+    const result = await run(
+      'INSERT INTO questions (subject_id, text, option_a, option_b, option_c, option_d, correct_answer, explanation, difficulty) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [subjectId, text.trim(), optionA.trim(), optionB.trim(), optionC.trim(), optionD.trim(), correctAnswer, explanation.trim(), difficulty]
+    );
+
+    res.status(201).json({ message: 'Question created', questionId: result.lastID });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function updateQuestion(req, res, next) {
+  try {
+    const questionId = parseInt(req.params.id, 10);
+    if (Number.isNaN(questionId)) {
+      return res.status(400).json({ error: 'Invalid question id' });
+    }
+
+    const {
+      subjectId,
+      text,
+      optionA,
+      optionB,
+      optionC,
+      optionD,
+      correctAnswer,
+      difficulty,
+      explanation
+    } = req.body;
+
+    if (!subjectId || !text || !optionA || !optionB || !optionC || !optionD || !correctAnswer || !difficulty || !explanation) {
+      return res.status(400).json({ error: 'All question fields are required' });
+    }
+
+    const validAnswers = ['A', 'B', 'C', 'D'];
+    const validDifficulties = ['Easy', 'Medium', 'Hard'];
+
+    if (!validAnswers.includes(correctAnswer)) {
+      return res.status(400).json({ error: 'Correct answer must be A, B, C, or D' });
+    }
+
+    if (!validDifficulties.includes(difficulty)) {
+      return res.status(400).json({ error: 'Difficulty must be Easy, Medium, or Hard' });
+    }
+
+    const existing = await get('SELECT id FROM questions WHERE id = ?', [questionId]);
+    if (!existing) {
+      return res.status(404).json({ error: 'Question not found' });
+    }
+
+    await run(
+      'UPDATE questions SET subject_id = ?, text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, correct_answer = ?, explanation = ?, difficulty = ? WHERE id = ?',
+      [subjectId, text.trim(), optionA.trim(), optionB.trim(), optionC.trim(), optionD.trim(), correctAnswer, explanation.trim(), difficulty, questionId]
+    );
+
+    res.json({ message: 'Question updated' });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getQuestions,
   getQuestionById,
-  searchQuestions
+  searchQuestions,
+  createQuestion,
+  updateQuestion
 };

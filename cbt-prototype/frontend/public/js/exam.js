@@ -6,7 +6,9 @@ let examState = {
   answers: {},
   startTime: null,
   elapsedSeconds: 0,
-  completed: false
+  totalDurationSeconds: 30 * 60, // 30 minutes configurable
+  completed: false,
+  timerId: null
 };
 
 function getQueryParam(name) {
@@ -19,8 +21,20 @@ function formatTimer(seconds) {
   return `${mins}:${secs}`;
 }
 
+function getRemainingTime() {
+  return examState.totalDurationSeconds - examState.elapsedSeconds;
+}
+
 function getOptionLetter(optionKey) {
   return optionKey.toUpperCase().replace('OPTION_', '');
+}
+
+function getAnsweredCount() {
+  return Object.keys(examState.answers).length;
+}
+
+function isQuestionAnswered(questionId) {
+  return examState.answers[questionId] !== undefined;
 }
 
 async function loadExam() {
@@ -63,17 +77,23 @@ async function fetchQuestions(subjectId) {
   examState.questions = data.questions || [];
   examState.startTime = Date.now();
   examState.elapsedSeconds = 0;
+  
   if (!examState.questions.length) {
     document.querySelector('#examQuestion').innerHTML = '<div class="card"><p>No questions are available for this subject yet.</p></div>';
     return;
   }
+
+  // Initialize UI with question count
+  document.querySelector('#totalQuestions').textContent = examState.questions.length;
+  document.querySelector('#answeredCount').textContent = `0/${examState.questions.length} answered`;
+  
   renderQuestion();
+  renderQuestionNavigation();
   startTimer();
 }
 
 function renderExamHeader() {
   document.querySelector('#examSubjectName').textContent = examState.subjectName;
-  document.querySelector('#examStatus').textContent = `Question ${examState.currentIndex + 1} of 10`;
 }
 
 function renderQuestion() {
@@ -84,21 +104,34 @@ function renderQuestion() {
     return;
   }
 
+  // Update progress indicators
+  document.querySelector('#currentQuestion').textContent = examState.currentIndex + 1;
+  document.querySelector('#difficultyBadge').textContent = question.difficulty;
+  document.querySelector('#difficultyBadge').className = `difficulty-badge difficulty-${question.difficulty.toLowerCase()}`;
+  
+  // Update progress bar
+  const progress = ((examState.currentIndex + 1) / examState.questions.length) * 100;
+  document.querySelector('#progressBar').style.width = progress + '%';
+
+  // Update answered count
+  const answeredCount = getAnsweredCount();
+  document.querySelector('#answeredCount').textContent = `${answeredCount}/${examState.questions.length} answered`;
+
   container.innerHTML = `
     <article class="question-card card">
-      <div class="exam-progress">
-        <div>
-          <strong>${question.difficulty} difficulty</strong>
-          <p>${question.text}</p>
-        </div>
-        <div>
-          <span>Time: <strong id="timerDisplay">${formatTimer(examState.elapsedSeconds)}</strong></span>
-        </div>
+      <div class="question-text">
+        <p>${question.text}</p>
       </div>
       <div class="question-options">
         ${['option_a','option_b','option_c','option_d'].map((optionKey) => {
-          const selected = examState.answers[question.id] === getOptionLetter(optionKey) ? 'selected' : '';
-          return `<button type="button" class="question-option ${selected}" data-option="${optionKey}">${question[optionKey]}</button>`;
+          const letter = getOptionLetter(optionKey);
+          const selected = examState.answers[question.id] === letter ? 'selected' : '';
+          return `
+            <button type="button" class="question-option ${selected}" data-option="${optionKey}" data-letter="${letter}">
+              <span class="option-letter">${letter}</span>
+              <span class="option-text">${question[optionKey]}</span>
+            </button>
+          `;
         }).join('')}
       </div>
     </article>
@@ -106,12 +139,37 @@ function renderQuestion() {
 
   document.querySelectorAll('.question-option').forEach((button) => {
     button.addEventListener('click', () => {
-      examState.answers[question.id] = getOptionLetter(button.dataset.option);
+      const letter = button.dataset.letter;
+      examState.answers[question.id] = letter;
       renderQuestion();
+      renderQuestionNavigation();
     });
   });
+}
 
-  document.querySelector('#examStatus').textContent = `Question ${examState.currentIndex + 1} of ${examState.questions.length}`;
+function renderQuestionNavigation() {
+  const navContainer = document.querySelector('#questionNav');
+  const questionsPerRow = window.innerWidth < 768 ? 5 : 10;
+  
+  navContainer.innerHTML = examState.questions.map((question, index) => {
+    const isAnswered = isQuestionAnswered(question.id);
+    const isCurrent = examState.currentIndex === index;
+    const statusClass = isCurrent ? 'current' : isAnswered ? 'answered' : 'unanswered';
+    
+    return `
+      <button class="nav-button ${statusClass}" data-index="${index}" title="Question ${index + 1}">
+        ${index + 1}
+      </button>
+    `;
+  }).join('');
+
+  document.querySelectorAll('.nav-button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      examState.currentIndex = parseInt(btn.dataset.index, 10);
+      renderQuestion();
+      renderQuestionNavigation();
+    });
+  });
 }
 
 function startTimer() {
@@ -120,7 +178,21 @@ function startTimer() {
 
   examState.timerId = setInterval(() => {
     examState.elapsedSeconds += 1;
-    timer.textContent = formatTimer(examState.elapsedSeconds);
+    const remaining = getRemainingTime();
+    timer.textContent = formatTimer(remaining);
+
+    // Warning at 5 minutes
+    if (remaining === 300) {
+      timer.classList.add('timer-warning');
+    }
+    // Critical warning at 1 minute
+    if (remaining === 60) {
+      timer.classList.add('timer-critical');
+    }
+    // Time's up
+    if (remaining <= 0) {
+      handleTimeExpired();
+    }
   }, 1000);
 }
 
@@ -131,14 +203,48 @@ function stopTimer() {
   }
 }
 
+function handleTimeExpired() {
+  stopTimer();
+  examState.completed = true;
+  
+  // Show time's up modal
+  document.querySelector('#timeUpModal').classList.remove('hidden');
+  
+  // Auto-submit after 2 seconds
+  setTimeout(() => {
+    submitExamFinal();
+  }, 2000);
+}
+
 function navigateQuestion(direction) {
   const nextIndex = examState.currentIndex + direction;
   if (nextIndex < 0 || nextIndex >= examState.questions.length) return;
   examState.currentIndex = nextIndex;
   renderQuestion();
+  renderQuestionNavigation();
 }
 
-async function submitExam() {
+function showConfirmationDialog() {
+  const answeredCount = getAnsweredCount();
+  const totalCount = examState.questions.length;
+  const unansweredCount = totalCount - answeredCount;
+
+  const summary = document.querySelector('#submissionSummary');
+  summary.innerHTML = `
+    <div class="submission-stats">
+      <p><strong>${answeredCount}</strong> question${answeredCount !== 1 ? 's' : ''} answered</p>
+      <p><strong>${unansweredCount}</strong> question${unansweredCount !== 1 ? 's' : ''} unanswered</p>
+    </div>
+  `;
+
+  document.querySelector('#confirmationModal').classList.remove('hidden');
+}
+
+function hideConfirmationDialog() {
+  document.querySelector('#confirmationModal').classList.add('hidden');
+}
+
+async function submitExamFinal() {
   stopTimer();
   const total = examState.questions.length;
   let score = 0;
@@ -180,7 +286,16 @@ async function submitExam() {
 function bindExamActions() {
   document.querySelector('#prevQuestion').addEventListener('click', () => navigateQuestion(-1));
   document.querySelector('#nextQuestion').addEventListener('click', () => navigateQuestion(1));
-  document.querySelector('#submitExam').addEventListener('click', submitExam);
+  document.querySelector('#submitExam').addEventListener('click', showConfirmationDialog);
+  
+  // Modal actions
+  document.querySelector('#confirmCancel').addEventListener('click', hideConfirmationDialog);
+  document.querySelector('#confirmSubmit').addEventListener('click', () => {
+    hideConfirmationDialog();
+    submitExamFinal();
+  });
+  
+  document.querySelector('#timeUpSubmit').addEventListener('click', submitExamFinal);
 }
 
 document.addEventListener('DOMContentLoaded', () => {

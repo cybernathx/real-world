@@ -32,9 +32,26 @@ async function viewStudents(req, res, next) {
 
 async function manageQuestions(req, res, next) {
   try {
-    const questions = await all(
-      'SELECT q.id, q.text, q.correct_answer, q.difficulty, s.name AS subject FROM questions q JOIN subjects s ON s.id = q.subject_id ORDER BY q.id DESC'
-    );
+    const filters = [];
+    const params = [];
+
+    if (req.query.subjectId) {
+      filters.push('q.subject_id = ?');
+      params.push(Number(req.query.subjectId));
+    }
+
+    if (req.query.q) {
+      filters.push('q.text LIKE ?');
+      params.push(`%${req.query.q}%`);
+    }
+
+    let sql = 'SELECT q.id, q.text, q.correct_answer, q.difficulty, q.subject_id, s.name AS subject FROM questions q JOIN subjects s ON s.id = q.subject_id';
+    if (filters.length) {
+      sql += ' WHERE ' + filters.join(' AND ');
+    }
+    sql += ' ORDER BY q.id DESC';
+
+    const questions = await all(sql, params);
     res.json({ questions });
   } catch (err) {
     next(err);

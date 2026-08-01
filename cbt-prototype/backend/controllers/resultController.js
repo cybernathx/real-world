@@ -22,7 +22,7 @@ async function getResultsByStudent(req, res, next) {
 async function submitResult(req, res, next) {
   try {
     const { subjectId, score, total, percentage, grade, timeUsed } = req.body;
-    const studentId = req.user.role === 'admin' ? req.body.studentId : req.user.id;
+    const studentId = req.body.studentId || req.user.id;
     if (!studentId || !subjectId || score == null || total == null || percentage == null || !grade || timeUsed == null) {
       return res.status(400).json({ error: 'studentId, subjectId, score, total, percentage, grade, and timeUsed are required' });
     }

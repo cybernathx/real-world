@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Questions | CBT Prep Hub</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">CBT Prep Hub</a>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="admin-question-form.html" class="button">Add Question</a>
+        <button id="logoutButton" class="button button-secondary">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container section">
+    <div class="section-header">
+      <p class="eyebrow">Admin Question Bank</p>
+      <h2>Manage practice questions</h2>
+    </div>
+
+    <div class="card">
+      <div class="section-row">
+        <label>
+          Search
+          <input type="text" id="searchQuery" placeholder="Search question text" />
+        </label>
+        <label>
+          Subject
+          <select id="subjectFilter">
+            <option value="">All subjects</option>
+          </select>
+        </label>
+      </div>
+    </div>
+
+    <div id="questionList" class="grid-list"></div>
+  </main>
+
+  <script src="js/app.js" defer></script>
+  <script src="js/admin-questions.js" defer></script>
+</body>
+</html>

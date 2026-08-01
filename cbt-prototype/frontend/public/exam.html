@@ -17,21 +17,75 @@
     </div>
   </header>
 
-  <main class="container section">
-    <div class="section-header">
-      <p class="eyebrow">Exam in progress</p>
-      <h2 id="examSubjectName">Loading exam...</h2>
-      <p id="examStatus" class="eyebrow" style="margin-top:1rem; color: var(--muted);">Preparing exam...</p>
+  <div class="exam-header">
+    <div class="container exam-header-inner">
+      <div class="exam-title-section">
+        <h2 id="examSubjectName">Loading exam...</h2>
+      </div>
+      <div class="exam-timer-section" id="timerSection">
+        <div class="timer-display">
+          <span id="timerDisplay" class="timer-value">00:00</span>
+          <span class="timer-label">Remaining</span>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <div id="examQuestion"></div>
+  <main class="exam-container">
+    <aside class="exam-sidebar">
+      <div class="navigation-header">
+        <h3>Questions</h3>
+        <span id="answeredCount" class="answered-summary">0/10 answered</span>
+      </div>
+      <div id="questionNav" class="question-navigation"></div>
+    </aside>
 
-    <div class="exam-footer">
-      <button id="prevQuestion" class="button button-secondary">Previous</button>
-      <button id="nextQuestion" class="button button-secondary">Next</button>
-      <button id="submitExam" class="button">Submit Exam</button>
+    <div class="exam-main">
+      <div class="progress-section">
+        <div class="progress-info">
+          <span><strong id="currentQuestion">1</strong> / <span id="totalQuestions">10</span></span>
+          <span id="difficultyBadge" class="difficulty-badge"></span>
+        </div>
+        <div class="progress-bar-container">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+      </div>
+
+      <div id="examQuestion" class="question-container"></div>
+
+      <div class="exam-footer">
+        <button id="prevQuestion" class="button button-secondary">← Previous</button>
+        <button id="nextQuestion" class="button button-secondary">Next →</button>
+        <button id="submitExam" class="button">Submit Exam</button>
+      </div>
     </div>
   </main>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmationModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <h3>Confirm Submission</h3>
+      <p>You are about to submit your exam. This action cannot be undone.</p>
+      <div id="submissionSummary" class="submission-summary"></div>
+      <div class="modal-actions">
+        <button id="confirmCancel" class="button button-secondary">Continue Taking Exam</button>
+        <button id="confirmSubmit" class="button button-danger">Submit Exam</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Time's Up Modal -->
+  <div id="timeUpModal" class="modal hidden">
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <h3>⏰ Time is Up!</h3>
+      <p>Your exam time has expired. Your answers will now be submitted automatically.</p>
+      <div class="modal-actions">
+        <button id="timeUpSubmit" class="button">OK</button>
+      </div>
+    </div>
+  </div>
 
   <script src="js/app.js" defer></script>
   <script src="js/exam.js" defer></script>

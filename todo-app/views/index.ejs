@@ -1,0 +1,70 @@
+<%- include('partials/header') %>
+
+<section class="task-form-card">
+  <form action="/tasks" method="POST" class="task-form">
+    <label for="title">New task</label>
+    <div class="task-input-group">
+      <input
+        type="text"
+        name="title"
+        id="title"
+        value="<%= titleValue %>"
+        placeholder="Add a title for your task"
+        maxlength="255"
+        required
+      />
+      <select name="priority" id="priority" aria-label="Priority">
+        <option value="Low" <%= (priorityValue === 'Low') ? 'selected' : '' %>>Low</option>
+        <option value="Medium" <%= (priorityValue === 'Medium') ? 'selected' : '' %>>Medium</option>
+        <option value="High" <%= (priorityValue === 'High') ? 'selected' : '' %>>High</option>
+      </select>
+      <button type="submit">Add task</button>
+    </div>
+    <% if (error) { %>
+      <p class="form-error"><%= error %></p>
+    <% } %>
+  </form>
+</section>
+
+<section class="task-list-card">
+  <div class="task-list-header">
+    <h2>Task list</h2>
+    <p><%= tasks.length %> total tasks</p>
+  </div>
+
+  <% if (tasks.length === 0) { %>
+    <div class="empty-state">
+      <p>No tasks yet. Add your first task to get started.</p>
+    </div>
+  <% } else { %>
+    <ul class="task-list">
+      <% tasks.forEach((task) => { %>
+        <li class="task-item <%= task.completed ? 'completed' : 'pending' %>">
+          <div class="task-content">
+            <div>
+              <h3><%= task.title %></h3>
+              <time datetime="<%= task.created_at %>"><%= task.created_at %></time>
+            </div>
+            <div>
+              <span class="priority-badge <%= 'priority-' + (task.priority || 'Medium').toLowerCase() %>"><%= task.priority || 'Medium' %></span>
+              <span class="task-status"><%= task.completed ? 'Completed' : 'Pending' %></span>
+            </div>
+          </div>
+
+          <div class="task-actions">
+            <% if (!task.completed) { %>
+              <form action="/tasks/<%= task.id %>/complete" method="POST" class="inline-form">
+                <button type="submit" class="button-secondary">Mark complete</button>
+              </form>
+            <% } %>
+            <form action="/tasks/<%= task.id %>/delete" method="POST" class="inline-form">
+              <button type="submit" class="button-danger">Delete</button>
+            </form>
+          </div>
+        </li>
+      <% }) %>
+    </ul>
+  <% } %>
+</section>
+
+<%- include('partials/footer') %>

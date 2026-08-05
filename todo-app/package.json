@@ -1,0 +1,14 @@
+{
+  "name": "todo-app",
+  "version": "1.0.0",
+  "description": "Full-stack To-Do List application using Node.js, Express, EJS, and SQLite.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6"
+  }
+}

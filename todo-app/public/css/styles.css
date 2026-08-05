@@ -87,7 +87,7 @@ body {
 
 .task-input-group {
   display: grid;
-  grid-template-columns: 1fr 140px auto;
+  grid-template-columns: 1fr 140px 180px auto;
   gap: 0.75rem;
   align-items: center;
 }
@@ -98,6 +98,13 @@ body {
   border: 1px solid #d1d5db;
   background: #ffffff;
   font-weight: 600;
+}
+
+.task-input-group input[type="date"] {
+  padding: 0.6rem 0.6rem;
+  border-radius: 0.9rem;
+  border: 1px solid #d1d5db;
+  background: #ffffff;
 }
 
 .task-input-group input {
@@ -252,6 +259,23 @@ body {
 .priority-high {
   background: #fee2e2;
   color: #991b1b;
+}
+
+.due-date {
+  margin-left: 0.5rem;
+  color: #92400e;
+  font-weight: 700;
+}
+
+.badge-overdue {
+  margin-left: 0.6rem;
+  display: inline-block;
+  background: #ffedd5;
+  color: #9a3412;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.8rem;
 }
 
 .task-actions {

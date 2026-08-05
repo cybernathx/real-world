@@ -19,6 +19,7 @@ function initialize() {
       title TEXT NOT NULL,
       completed INTEGER NOT NULL DEFAULT 0,
       priority TEXT NOT NULL DEFAULT 'Medium',
+      due_date TEXT DEFAULT NULL,
       created_at TEXT NOT NULL DEFAULT (datetime('now', 'localtime'))
     )
   `;
@@ -41,6 +42,16 @@ function initialize() {
           console.error('Failed to add priority column to tasks table:', addErr.message);
         } else {
           console.log("Added 'priority' column to tasks table with default 'Medium'.");
+        }
+      });
+    }
+    const hasDueDate = rows && rows.some((r) => r.name === 'due_date');
+    if (!hasDueDate) {
+      db.run("ALTER TABLE tasks ADD COLUMN due_date TEXT DEFAULT NULL", (addErr) => {
+        if (addErr) {
+          console.error('Failed to add due_date column to tasks table:', addErr.message);
+        } else {
+          console.log("Added 'due_date' column to tasks table (nullable).");
         }
       });
     }

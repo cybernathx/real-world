@@ -18,6 +18,7 @@
         <option value="Medium" <%= (priorityValue === 'Medium') ? 'selected' : '' %>>Medium</option>
         <option value="High" <%= (priorityValue === 'High') ? 'selected' : '' %>>High</option>
       </select>
+      <input type="date" name="dueDate" id="dueDate" value="<%= dueDateValue %>" aria-label="Due date" />
       <button type="submit">Add task</button>
     </div>
     <% if (error) { %>
@@ -47,7 +48,13 @@
             </div>
             <div>
               <span class="priority-badge <%= 'priority-' + (task.priority || 'Medium').toLowerCase() %>"><%= task.priority || 'Medium' %></span>
+              <% if (task.due_date) { %>
+                <span class="due-date">Due: <%= task.due_date %></span>
+              <% } %>
               <span class="task-status"><%= task.completed ? 'Completed' : 'Pending' %></span>
+              <% if (task.isOverdue) { %>
+                <span class="badge-overdue">Overdue</span>
+              <% } %>
             </div>
           </div>
 

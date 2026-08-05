@@ -11,7 +11,8 @@ async function showTasks(req, res, next) {
       ...stats,
       error: null,
       titleValue: '',
-      priorityValue: 'Medium'
+      priorityValue: 'Medium',
+      dueDateValue: ''
     });
   } catch (error) {
     next(error);
@@ -24,6 +25,9 @@ async function createTask(req, res, next) {
     const rawPriority = (req.body.priority || 'Medium').trim();
     const allowed = ['Low', 'Medium', 'High'];
     const priority = allowed.includes(rawPriority) ? rawPriority : 'Medium';
+    // due date is optional; empty string -> null in DB
+    const rawDueDate = (req.body.dueDate || '').trim();
+    const dueDate = rawDueDate === '' ? null : rawDueDate;
 
     if (!title) {
       const tasks = await taskModel.getAllTasks();
@@ -32,7 +36,8 @@ async function createTask(req, res, next) {
         ...getTaskStatistics(tasks),
         error: 'Task title cannot be empty. Please enter a valid title.',
         titleValue: '',
-        priorityValue: priority
+        priorityValue: priority,
+        dueDateValue: rawDueDate
       });
     }
 
@@ -43,11 +48,12 @@ async function createTask(req, res, next) {
         ...getTaskStatistics(tasks),
         error: 'Task title must be 255 characters or fewer.',
         titleValue: title,
-        priorityValue: priority
+        priorityValue: priority,
+        dueDateValue: rawDueDate
       });
     }
-
-    await taskModel.createTask(title, priority);
+    
+    await taskModel.createTask(title, priority, dueDate);
     res.redirect('/');
   } catch (error) {
     next(error);

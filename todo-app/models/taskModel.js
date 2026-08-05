@@ -6,30 +6,64 @@ function getDb() {
 
 function getAllTasks() {
   return new Promise((resolve, reject) => {
-    const sql = `SELECT id, title, completed, priority, created_at FROM tasks ORDER BY completed ASC, created_at DESC`;
+    const sql = ` SELECT id, title, completed, priority, due_date, created_at FROM tasks `;
     getDb().all(sql, [], (err, rows) => {
       if (err) {
         return reject(err);
       }
-      const tasks = rows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        completed: Boolean(row.completed),
-        priority: row.priority || 'Medium',
-        created_at: row.created_at
-      }));
+      const tasks = rows.map((row) => {
+        const dueDateRaw = row.due_date || null;
+        // compute isOverdue: not completed, has due date, due_date < today
+        let isOverdue = false;
+        if (dueDateRaw && !row.completed) {
+          try {
+            const due = new Date(dueDateRaw);
+            const today = new Date();
+            // normalize to local date start (00:00:00)
+            today.setHours(0, 0, 0, 0);
+            if (due < today) {
+              isOverdue = true;
+            }
+          } catch (e) {
+            isOverdue = false;
+          }
+        }
+        return {
+          id: row.id,
+          title: row.title,
+          completed: Boolean(row.completed),
+          priority: row.priority || 'Medium',
+          due_date: dueDateRaw,
+          isOverdue,
+          created_at: row.created_at
+        };
+      });
       resolve(tasks);
     });
   });
 }
 
-function createTask(title, priority = 'Medium') {
+function createTask(title, priority = 'Medium', dueDate = null) {
   return new Promise((resolve, reject) => {
-    const sql = `INSERT INTO tasks (title, completed, priority) VALUES (?, 0, ?)`;
-    getDb().run(sql, [title, priority], function (err) {
+    const sql = `INSERT INTO tasks (title, completed, priority, due_date) VALUES (?, 0, ?, ?)`;
+    // pass null for due_date when not provided
+    
+    getDb().run(sql, [title, priority, dueDate], function (err) {
       if (err) {
         return reject(err);
       }
+
+      getDb().get(
+        'SELECT * FROM tasks WHERE id = ?',
+        [this.lastID],
+        (selectErr, row) => {
+          if (selectErr) {
+            console.error(selectErr);
+          } else {
+          }
+        }
+      );
+
       resolve(this.lastID);
     });
   });
